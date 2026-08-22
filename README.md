@@ -3,6 +3,9 @@
 A single-round command-line number guessing game built as a test project for
 Codecrew.
 
+The decisions and outcomes from the first delivery are recorded in the
+[M1 milestone document](docs/milestones/1-playable-number-guessing-game.md).
+
 ## Play
 
 Python 3.9 or newer is required. Run:
