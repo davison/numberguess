@@ -83,8 +83,9 @@ class NumberGuessTests(unittest.TestCase):
 
 class TerminalStyleSupportTests(unittest.TestCase):
     class FakeStream:
-        def __init__(self, interactive):
+        def __init__(self, interactive, encoding="utf-8"):
             self.interactive = interactive
+            self.encoding = encoding
 
         def isatty(self):
             return self.interactive
@@ -96,6 +97,12 @@ class TerminalStyleSupportTests(unittest.TestCase):
     def test_disables_style_for_redirected_output(self):
         with patch.dict(os.environ, {}, clear=True):
             self.assertFalse(supports_terminal_style(self.FakeStream(False)))
+
+    def test_disables_style_when_stream_cannot_encode_icons(self):
+        with patch.dict(os.environ, {}, clear=True):
+            self.assertFalse(
+                supports_terminal_style(self.FakeStream(True, encoding="ascii"))
+            )
 
     def test_respects_no_color_and_dumb_terminal_conventions(self):
         stream = self.FakeStream(True)
