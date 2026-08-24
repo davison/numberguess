@@ -21,6 +21,15 @@ MAGENTA = "\033[35m"
 
 def supports_terminal_style(stream: TextIO) -> bool:
     """Return whether a stream should receive colours and Unicode icons."""
+    encoding = getattr(stream, "encoding", None)
+    if not encoding:
+        return False
+
+    try:
+        "🎯➜⚠↑↓🎉".encode(encoding)
+    except (LookupError, UnicodeEncodeError):
+        return False
+
     return (
         hasattr(stream, "isatty")
         and stream.isatty()
