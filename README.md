@@ -17,7 +17,13 @@ python3 numberguess.py
 The game chooses an integer from 1 to 100. Enter guesses until you find it;
 the game reports whether each valid guess is too high or too low. Invalid and
 out-of-range entries do not count as attempts. The program reports the final
-attempt count and exits after a correct guess.
+attempt count and exits after a correct guess. Interactive terminals get a
+colourful interface with icons; redirected output automatically stays plain.
+Set the standard `NO_COLOR` environment variable to disable decoration:
+
+```console
+NO_COLOR=1 python3 numberguess.py
+```
 
 ## Test
 
