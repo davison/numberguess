@@ -7,6 +7,6 @@ hub: self
 # reserved for team routing.)
 roles:
   implementer: { identity: ~ }
-  reviewer: { identity: ~ }
+  reviewer: { identity: davison-review-bot }
   qa: { identity: ~ }
   doc-synthesizer: { identity: ~ }
