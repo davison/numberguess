@@ -2,7 +2,7 @@ import os
 import unittest
 from unittest.mock import patch
 
-from numberguess import play_game, supports_terminal_style
+from numberguess import ask_to_play_again, main, play_game, supports_terminal_style
 
 
 class NumberGuessTests(unittest.TestCase):
@@ -111,6 +111,69 @@ class TerminalStyleSupportTests(unittest.TestCase):
             self.assertFalse(supports_terminal_style(stream))
         with patch.dict(os.environ, {"TERM": "dumb"}, clear=True):
             self.assertFalse(supports_terminal_style(stream))
+
+
+class ContinuousPlayTests(unittest.TestCase):
+    def test_yes_starts_a_fresh_game_and_no_exits(self):
+        responses = iter(["25", "y", "75", "YES", "50", "n"])
+        secrets = iter([25, 75, 50])
+        prompts = []
+        output = []
+        picker_calls = []
+
+        def input_fn(prompt):
+            prompts.append(prompt)
+            return next(responses)
+
+        def secret_picker(minimum, maximum):
+            picker_calls.append((minimum, maximum))
+            return next(secrets)
+
+        main(input_fn, output.append, secret_picker, styled=False)
+
+        self.assertEqual([(1, 100), (1, 100), (1, 100)], picker_calls)
+        self.assertEqual(3, output.count("I'm thinking of a number from 1 to 100."))
+        self.assertEqual(3, prompts.count("Play again? (y/n): "))
+
+    def test_no_exits_after_one_game(self):
+        responses = iter(["50", "no"])
+        picker_calls = []
+
+        main(
+            lambda prompt: next(responses),
+            lambda message: None,
+            lambda minimum, maximum: picker_calls.append((minimum, maximum)) or 50,
+            styled=False,
+        )
+
+        self.assertEqual([(1, 100)], picker_calls)
+
+    def test_invalid_replay_response_explains_choices_and_reprompts(self):
+        responses = iter(["maybe", "  N  "])
+        prompts = []
+        output = []
+
+        result = ask_to_play_again(
+            lambda prompt: prompts.append(prompt) or next(responses),
+            output.append,
+        )
+
+        self.assertFalse(result)
+        self.assertEqual(["Play again? (y/n): "] * 2, prompts)
+        self.assertEqual(["Please enter yes (y) or no (n)."], output)
+
+    def test_replay_prompt_can_be_styled(self):
+        prompts = []
+
+        result = ask_to_play_again(
+            lambda prompt: prompts.append(prompt) or "Y",
+            lambda message: None,
+            styled=True,
+        )
+
+        self.assertTrue(result)
+        self.assertIn("➜", prompts[0])
+        self.assertIn("\033[", prompts[0])
 
 
 if __name__ == "__main__":

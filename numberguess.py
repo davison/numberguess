@@ -113,9 +113,41 @@ def play_game(
             return attempts
 
 
-def main() -> None:
-    """Run the command-line game."""
-    play_game()
+def ask_to_play_again(
+    input_fn: Callable[[str], str] = input,
+    output_fn: Callable[[str], None] = print,
+    styled: bool = False,
+) -> bool:
+    """Ask whether to play another round, re-prompting until the choice is valid."""
+    prompt = decorate("Play again? (y/n): ", "➜", BOLD + CYAN, styled)
+
+    while True:
+        response = input_fn(prompt).strip().lower()
+        if response in {"yes", "y"}:
+            return True
+        if response in {"no", "n"}:
+            return False
+        output_fn(
+            decorate("Please enter yes (y) or no (n).", "⚠", YELLOW, styled)
+        )
+
+
+def main(
+    input_fn: Callable[[str], str] = input,
+    output_fn: Callable[[str], None] = print,
+    secret_picker: Callable[[int, int], int] = random.randint,
+    styled: Optional[bool] = None,
+) -> None:
+    """Run games until the player chooses to stop."""
+    if styled is None:
+        styled = input_fn is input and output_fn is print and supports_terminal_style(
+            sys.stdout
+        )
+
+    while True:
+        play_game(input_fn, output_fn, secret_picker, styled)
+        if not ask_to_play_again(input_fn, output_fn, styled):
+            return
 
 
 if __name__ == "__main__":
