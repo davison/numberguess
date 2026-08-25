@@ -35,11 +35,12 @@ CodeCrew's non-doer review gate, but GitHub did not count that App review toward
 the repository ruleset's required approving-review total. The ruleset had no
 bypass actors, so an initial administrator merge attempt was also refused.
 
-The operator first approved using an administrator bypass. Because the ruleset
-had no eligible bypass actor, the repository administrator role was then added
-temporarily, PR #11 was rebase-merged with the exception, and the ruleset was
-restored to no bypass actors. The detailed gate resolution documenting that
-temporary ruleset mutation was posted immediately after the merge on
+The operator first
+[approved using an administrator bypass](https://github.com/davison/numberguess/issues/10#issuecomment-5411156100).
+Because the ruleset had no eligible bypass actor, the repository administrator
+role was then added temporarily, PR #11 was rebase-merged with the exception,
+and the ruleset was restored to no bypass actors. The detailed gate resolution
+documenting that temporary ruleset mutation was posted immediately after the merge on
 [task #10](https://github.com/davison/numberguess/issues/10#issuecomment-5411179688).
 This completed the independently verified task while keeping the exception
 explicit, but the sequence also means the precise mutation mechanism was
